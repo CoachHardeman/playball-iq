@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111111">
+<title>PlayBall IQ™</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  color: #111;
+}
+
+.app {
+  max-width: 650px;
+  margin: auto;
+  min-height: 100vh;
+  background: white;
+  padding: 20px;
+}
+
+.logo {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 800;
+  margin: 15px 0 5px;
+}
+
+.tagline {
+  text-align: center;
+  color: #666;
+  margin-bottom: 25px;
+}
+
+.card {
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 3px 15px rgba(0,0,0,.08);
+}
+
+h2 {
+  margin-top: 0;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  margin: 7px 0;
+  border: 0;
+  border-radius: 10px;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.primary {
+  background: #111;
+  color: white;
+}
+
+.secondary {
+  background: #e8e8e8;
+  color: #111;
+}
+
+.answer {
+  background: #eeeeee;
+  text-align: left;
+}
+
+.answer.correct {
+  background: #22a447;
+  color: white;
+}
+
+.answer.wrong {
+  background: #d93636;
+  color: white;
+}
+
+.answer:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+input, select {
+  width: 100%;
+  padding: 14px;
+  margin: 8px 0 15px;
+  border: 1px solid #bbb;
+  border-radius: 9px;
+  font-size: 17px;
+}
+
+.hidden {
+  display: none;
+}
+
+.base-check {
+  background: #f1f1f1;
+  border-radius: 12px;
+  padding: 15px;
+  margin: 15px 0;
+}
+
+.timer {
+  text-align: center;
+  font-size: 42px;
+  font-weight: bold;
+  margin: 15px 0;
+}
+
+.timer.warning {
+  color: #d93636;
+}
+
+.situation {
+  background: #fff7d6;
+  border-radius: 12px;
+  padding: 15px;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.feedback {
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 15px;
+}
+
+.correct-feedback {
+  background: #dff5e5;
+}
+
+.wrong-feedback {
+  background: #ffe0e0;
+}
+
+.progress {
+  text-align: center;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.small {
+  font-size: 14px;
+  color: #666;
+}
+
+.score {
+  font-size: 42px;
+  text-align: center;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<div class="logo">⚾🥎 PLAYBALL IQ™</div>
+
+<div class="tagline">
+Train Your Baseball Brain
+</div>
+
+<div id="app"></div>
+
+</div>
+
+<script>
+
+/* ============================
+   PLAYBALL IQ QUESTION BANK
+   ============================ */
+
+const QUESTIONS = [
+
+{
+sport:"Softball",
+position:"Third Base",
+category:"Ground Ball",
+frequency:5,
+bases:"Runner on 1st",
+outs:"0 Outs",
+score:"Tie Game",
+expectation:"Contact hitter",
+
+situation:
+"A ground ball is hit directly toward third base.",
+
+question:
+"What should you think about FIRST?",
+
+answers:[
+"Where is the easiest force out?",
+"Throw home automatically",
+"Stay on third base",
+"Throw to second every time"
+],
+
+correct:0,
+
+lesson:
+"Great defenders know the runners, outs and force situation before deciding where to throw."
+},
+
+{
+sport:"Softball",
+position:"Third Base",
+category:"Bunt Defense",
+frequency:5,
+bases:"Runner on 1st",
+outs:"0 Outs",
+score:"Tie Game",
+expectation:"Bunt threat",
+
+situation:
+"The batter squares around and lays a slow bunt toward third.",
+
+question:
+"What is your first responsibility?",
+
+answers:[
+"Attack the bunt while knowing where the lead runner is",
+"Stay on third base",
+"Cover second base",
+"Wait for the ball to stop"
+],
+
+correct:0,
+
+lesson:
+"Recognize the bunt before the ball is hit. Attack with a plan."
+},
+
+{
+sport:"Softball",
+position:"Third Base",
+category:"Runner on Third",
+frequency:5,
+bases:"Runner on 3rd",
+outs:"1 Out",
+score:"Tie Game",
+expectation:"Possible squeeze",
+
+situation:
+"The batter squares early and the runner on third breaks toward home.",
+
+question:
+"What should immediately become your priority?",
+
+answers:[
+"Prevent the runner from scoring",
+"Cover second base",
+"Stay on third",
+"Ignore the runner"
+],
+
+correct:0,
+
+lesson:
+"When a runner is on third, you must recognize the scoring threat before the ball is put in play."
+},
+
+{
+sport:"Softball",
+position:"Third Base",
+category:"Two Outs",
+frequency:5,
+bases:"Bases Loaded",
+outs:"2 Outs",
+score:"Tie Game",
+expectation:"Ground ball",
+
+situation:
+"A ground ball is hit to you with two outs.",
+
+question:
+"What is the main objective?",
+
+answers:[
+"Get an out and end the inning",
+"Try to make the hardest possible play",
+"Hold the ball",
+"Wait for another fielder"
+],
+
+correct:0,
+
+lesson:
+"With two outs, any out ends the inning. Know the situation."
+},
+
+{
+sport:"Softball",
+position:"Third Base",
+category:"Double Play",
+frequency:4,
+bases:"Runner on 1st",
+outs:"1 Out",
+score:"Winning by 1",
+expectation:"Ground ball",
+
+situation:
+"A ground ball comes to you with a runner on first and one out.",
+
+question:
+"What should you consider?",
+
+answers:[
+"Whether a double play is available",
+"Throw home automatically",
+"Ignore the runner",
+"Run toward second base"
+],
+
+correct:0,
+
+lesson:
+"Before making the throw, recognize the force situation and possible double play."
+},
+
+{
+sport:"Softball",
+position:"Third Base",
+category:"Routine Play",
+frequency:5,
+bases:"Bases Empty",
+outs:"2 Outs",
+score:"Winning late",
+expectation:"Routine ground ball",
+
+situation:
+"A routine ground ball is hit to you.",
+
+question:
+"What is your mindset?",
+
+answers:[
+"Make the routine play and finish the inning",
+"Rush because the game is close",
+"Try a difficult throw",
+"Wait for help"
+],
+
+correct:0,
+
+lesson:
+"Pressure should make you focused, not rushed."
+},
+
+{
+sport:"Softball",
+position:"Third Base",
+category:"Advanced",
+frequency:3,
+bases:"Runner on 2nd",
+outs:"1 Out",
+score:"Losing by 1",
+expectation:"Hard ground ball",
+
+situation:
+"A hard ground ball is hit toward third and the runner on second may advance.",
+
+question:
+"What should you recognize before choosing the throw?",
+
+answers:[
+"The runner's position and the scoring situation",
+"Only the batter",
+"Only the number of outs",
+"Nothing until after the throw"
+],
+
+correct:0,
+
+lesson:
+"The best decision combines the entire game situation."
+},
+
+{
+sport:"Softball",
+position:"Third Base",
+category:"Rare IQ",
+frequency:1,
+bases:"Runner on 1st",
+outs:"2 Outs",
+score:"Winning by 1",
+expectation:"Possible bunt",
+
+situation:
+"The batter shows bunt late and the runner breaks.",
+
+question:
+"What separates a high-IQ third baseman from simply reacting to the ball?",
+
+answers:[
+"Knowing the likely play before contact",
+"Waiting until the ball stops",
+"Always throwing to first",
+"Always charging immediately"
+],
+
+correct:0,
+
+lesson:
+"Elite defenders anticipate. They don't wait until the ball is hit to begin thinking."
+}
+
+];
+
+
+/* ============================
+   APP STATE
+   ============================ */
+
+let playerName = "";
+let sport = "";
+let position = "";
+let level = "";
+let timerSeconds = 0;
+let timer = null;
+let currentQuestion = 0;
+let score = 0;
+let questions = [];
+let answered = false;
+
+
+/* ============================
+   START SCREEN
+   ============================ */
+
+function home(){
+
+document.getElementById("app").innerHTML = `
+
+<div class="card">
+
+<h2>Start Training</h2>
+
+<label>Player Name</label>
+<input id="playerName" placeholder="Enter your name">
+
+<label>Sport</label>
+
+<select id="sport">
+
+<option value="">Choose Sport</option>
+<option value="Softball">🥎 Softball</option>
+<option value="Baseball">⚾ Baseball</option>
+
+</select>
+
+<label>Position</label>
+
+<select id="position">
+
+<option value="">Choose Position</option>
+<option>Pitcher</option>
+<option>Catcher</option>
+<option>First Base</option>
+<option>Second Base</option>
+<option>Shortstop</option>
+<option>Third Base</option>
+<option>Left Field</option>
+<option>Center Field</option>
+<option>Right Field</option>
+
+</select>
+
+<label>Training Level</label>
+
+<select id="level">
+
+<option value="Rookie">Rookie — No Timer</option>
+<option value="Developing">Developing — 30 Seconds</option>
+<option value="Competitive">Competitive — 20 Seconds</option>
+<option value="High School">High School — 15 Seconds</option>
+<option value="Elite">Elite — 10 Seconds</option>
+
+</select>
+
+<button class="primary" onclick="startTraining()">
+START TRAINING
+</button>
+
+</div>
+
+<div class="card">
+
+<h3>🧠 B.A.S.E. CHECK™</h3>
+
+<p>
+<b>B</b> — Bases<br>
+<b>A</b> — Away / Outs<br>
+<b>S</b> — Score<br>
+<b>E</b> — Expectation
+</p>
+
+<p class="small">
+Know the situation BEFORE the pitch.
+</p>
+
+</div>
+
+`;
+
+}
+
+
+/* ============================
+   START TRAINING
+   ============================ */
+
+function startTraining(){
+
+playerName =
+document.getElementById("playerName").value.trim();
+
+sport =
+document.getElementById("sport").value;
+
+position =
+document.getElementById("position").value;
+
+level =
+document.getElementById("level").value;
+
+
+if(!playerName || !sport || !position){
+
+alert("Please enter your name, sport and position.");
+
+return;
+
+}
+
+
+/* MVP currently contains Third Base softball questions */
+
+if(sport !== "Softball" || position !== "Third Base"){
+
+alert(
+"For Phase 1, the playable module is Softball → Third Base. More positions are being added."
+);
+
+return;
+
+}
+
+
+questions =
+buildWeightedQuestions(10);
+
+currentQuestion = 0;
+score = 0;
+
+showPrePitch();
+
+}
+
+
+/* ============================
+   WEIGHTED QUESTIONS
+   ============================ */
+
+function buildWeightedQuestions(amount){
+
+let pool = [];
+
+QUESTIONS.forEach(q=>{
+
+for(let i=0;i<q.frequency;i++){
+
+pool.push(q);
+
+}
+
+});
+
+
+pool.sort(()=>Math.random()-0.5);
+
+let selected = [];
+
+while(selected.length < amount){
+
+let q =
+pool[Math.floor(Math.random()*pool.length)];
+
+selected.push(q);
+
+}
+
+return selected;
+
+}
+
+
+/* ============================
+   TIMER
+   ============================ */
+
+function getTimer(){
+
+if(level === "Developing") return 30;
+if(level === "Competitive") return 20;
+if(level === "High School") return 15;
+if(level === "Elite") return 10;
+
+return 0;
+
+}
+
+
+/* ============================
+   PRE-PITCH
+   ============================ */
+
+function showPrePitch(){
+
+clearInterval(timer);
+
+answered = false;
+
+let q = questions[currentQuestion];
+
+timerSeconds = getTimer();
+
+document.getElementById("app").innerHTML = `
+
+<div class="card">
+
+<div class="progress">
+Rep ${currentQuestion+1} of ${questions.length}
+</div>
+
+<h2>👀 EYES UP</h2>
+
+<p>
+Prepare before the pitch.
+</p>
+
+<div class="base-check">
+
+<b>B — Bases:</b><br>
+${q.bases}
+
+<br><br>
+
+<b>A — Away:</b><br>
+${q.outs}
+
+<br><br>
+
+<b>S — Score:</b><br>
+${q.score}
+
+<br><br>
+
+<b>E — Expectation:</b><br>
+${q.expectation}
+
+</div>
+
+<div class="timer" id="timer">
+${timerSeconds || "READY"}
+</div>
+
+<p style="text-align:center">
+Think:
+<br>
+<b>Where is my first play?</b><br>
+<b>What is my responsibility?</b><br>
+<b>Where is my backup?</b>
+</p>
+
+<button class="primary" onclick="beginPitch()">
+${timerSeconds ? "START CLOCK" : "SEE PLAY"}
+</button>
+
+</div>
+
+`;
+
+}
+
+
+/* ============================
+   BEGIN PITCH
+   ============================ */
+
+function beginPitch(){
+
+if(timerSeconds === 0){
+
+showContact();
+
+return;
+
+}
+
+let display =
+document.getElementById("timer");
+
+display.textContent =
+timerSeconds;
+
+timer =
+setInterval(()=>{
+
+timerSeconds--;
+
+display.textContent =
+timerSeconds;
+
+if(timerSeconds <= 5){
+
+display.classList.add("warning");
+
+}
+
+if(timerSeconds <= 0){
+
+clearInterval(timer);
+
+showContact();
+
+}
+
+},1000);
+
+}
+
+
+/* ============================
+   CONTACT EVENT
+   ============================ */
+
+function showContact(){
+
+clearInterval(timer);
+
+let q =
+questions[currentQuestion];
+
+document.getElementById("app").innerHTML = `
+
+<div class="card">
+
+<div class="progress">
+Rep ${currentQuestion+1} of ${questions.length}
+</div>
+
+<h2>💥 CONTACT!</h2>
+
+<div style="font-size:70px;text-align:center">
+🥎💥
+</div>
+
+<div class="situation">
+
+<b>Ball in play:</b>
+
+<br><br>
+
+${q.situation}
+
+</div>
+
+<h3>${q.question}</h3>
+
+<p class="small">
+Choose your answer, then submit.
+</p>
+
+<div id="answers">
+
+${q.answers.map((answer,index)=>`
+
+<button
+class="answer"
+onclick="selectAnswer(${index})"
+id="answer-${index}">
+
+${String.fromCharCode(65+index)}. ${answer}
+
+</button>
+
+`).join("")}
+
+</div>
+
+<button
+class="primary"
+onclick="submitAnswer()">
+
+SUBMIT ANSWER
+
+</button>
+
+<div id="feedback"></div>
+
+</div>
+
+`;
+
+}
+
+
+/* ============================
+   ANSWER SELECTION
+   ============================ */
+
+let selectedAnswer = null;
+
+function selectAnswer(index){
+
+if(answered) return;
+
+selectedAnswer = index;
+
+document.querySelectorAll(".answer")
+.forEach(btn=>{
+
+btn.style.outline = "";
+
+});
+
+document.getElementById("answer-"+index)
+.style.outline = "4px solid #111";
+
+}
+
+
+/* ============================
+   SUBMIT
+   ============================ */
+
+function submitAnswer(){
+
+if(answered) return;
+
+if(selectedAnswer === null){
+
+alert("Choose an answer first.");
+
+return;
+
+}
+
+answered = true;
+
+let q =
+questions[currentQuestion];
+
+let buttons =
+document.querySelectorAll(".answer");
+
+
+buttons.forEach((button,index)=>{
+
+button.disabled = true;
+
+if(index === q.correct){
+
+button.classList.add("correct");
+
+}
+
+if(index === selectedAnswer &&
+index !== q.correct){
+
+button.classList.add("wrong");
+
+}
+
+});
+
+
+if(selectedAnswer === q.correct){
+
+score++;
+
+document.getElementById("feedback").innerHTML = `
+
+<div class="feedback correct-feedback">
+
+<h3>🟩 CORRECT!</h3>
+
+<p>${q.lesson}</p>
+
+</div>
+
+`;
+
+}else{
+
+document.getElementById("feedback").innerHTML = `
+
+<div class="feedback wrong-feedback">
+
+<h3>🟥 INCORRECT</h3>
+
+<p>
+The correct decision is:
+<b>${q.answers[q.correct]}</b>
+</p>
+
+<p>${q.lesson}</p>
+
+</div>
+
+`;
+
+}
+
+
+let button =
+document.createElement("button");
+
+button.className = "primary";
+
+button.textContent =
+currentQuestion === questions.length-1
+? "FINISH TRAINING"
+: "NEXT REP";
+
+button.onclick =
+nextQuestion;
+
+document.getElementById("feedback")
+.appendChild(button);
+
+}
+
+
+/* ============================
+   NEXT
+   ============================ */
+
+function nextQuestion(){
+
+selectedAnswer = null;
+
+currentQuestion++;
+
+if(currentQuestion >= questions.length){
+
+showResults();
+
+}else{
+
+showPrePitch();
+
+}
+
+}
+
+
+/* ============================
+   RESULTS
+   ============================ */
+
+function showResults(){
+
+let percentage =
+Math.round((score/questions.length)*100);
+
+document.getElementById("app").innerHTML = `
+
+<div class="card">
+
+<h2 style="text-align:center">
+TRAINING COMPLETE
+</h2>
+
+<p style="text-align:center">
+${playerName}
+<br>
+${sport} — ${position}
+</p>
+
+<div class="score">
+${percentage}%
+</div>
+
+<p style="text-align:center">
+${score} correct out of ${questions.length}
+</p>
+
+<hr>
+
+<h3>🧠 PlayBall IQ Report</h3>
+
+<p>
+Every rep is designed to help you recognize the situation faster before the ball is put in play.
+</p>
+
+<button class="primary" onclick="home()">
+NEW PLAYER / NEW TEST
+</button>
+
+<button class="secondary" onclick="startTraining()">
+REFRESH & SCRAMBLE TEST
+</button>
+
+</div>
+
+`;
+
+}
+
+
+home();
+
+</script>
+
+</body>
+</html>
